@@ -34,5 +34,18 @@ export default defineRouter((/* { store, ssrContext } */) => {
     history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
   })
 
+  Router.beforeEach((to) => {
+    const hasToken =
+      typeof window !== 'undefined' && Boolean(window.localStorage.getItem('creative_auth_token'))
+
+    if (to.meta.requiresAuth && !hasToken) {
+      return '/login'
+    }
+
+    if (to.meta.guestOnly && hasToken) {
+      return '/'
+    }
+  })
+
   return Router
 })

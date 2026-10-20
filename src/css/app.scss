@@ -1,1 +1,10 @@
 // app global css
+html,
+body,
+#q-app {
+  min-height: 100%;
+}
+
+body {
+  font-family: Roboto, Arial, sans-serif;
+}
