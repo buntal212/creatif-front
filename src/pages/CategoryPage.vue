@@ -147,8 +147,8 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { api } from '@/boot/axios'
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 const rows = ref([])
 const loading = ref(false)
 const saving = ref(false)
@@ -170,21 +170,9 @@ const filteredCategories = computed(() => {
   )
 })
 
-function authHeaders() {
-  return {
-    Accept: 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('creative_auth_token')}`,
-  }
-}
-
-async function request(path, options = {}) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    ...options,
-    headers: { ...authHeaders(), ...options.headers },
-  })
-  const data = response.status === 204 ? null : await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(data.message || 'Permintaan tidak dapat diproses.')
-  return data
+async function request(path, { body, ...config } = {}) {
+  const response = await api.request({ url: path, data: body, ...config })
+  return response.data
 }
 
 async function loadCategories() {

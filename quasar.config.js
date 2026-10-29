@@ -2,8 +2,42 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app'
+import { readFileSync } from 'node:fs'
+import { parseEnv } from 'node:util'
 
-export default defineConfig((/* ctx */) => {
+function getApiBaseUrl(envFile) {
+  let env
+
+  try {
+    env = parseEnv(readFileSync(envFile, 'utf8'))
+  } catch {
+    throw new Error(`[Quasar] File environment tidak dapat dibaca: ${envFile}`)
+  }
+
+  const apiBaseUrl = env.QCLI_API_BASE_URL
+  if (!apiBaseUrl) {
+    throw new Error(`[Quasar] QCLI_API_BASE_URL wajib diatur di ${envFile}.`)
+  }
+
+  try {
+    const url = new URL(apiBaseUrl)
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw new Error('Protokol harus HTTP atau HTTPS.')
+    }
+  } catch (error) {
+    throw new Error(
+      `[Quasar] QCLI_API_BASE_URL di ${envFile} tidak valid: ${
+        error instanceof Error ? error.message : apiBaseUrl
+      }`,
+      { cause: error },
+    )
+  }
+}
+
+export default defineConfig((ctx) => {
+  const envFile = ctx.prod ? '.env.production' : '.env.development'
+  getApiBaseUrl(envFile)
+
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -11,7 +45,7 @@ export default defineConfig((/* ctx */) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: [],
+    boot: ['axios'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -31,6 +65,10 @@ export default defineConfig((/* ctx */) => {
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
+      env: {
+        clientPrefix: 'QCLI_',
+        file: [envFile],
+      },
       target: {
         // browser: 'baseline-widely-available',
         // node: 'node22'
@@ -179,7 +217,11 @@ export default defineConfig((/* ctx */) => {
       // useCredentialsForManifestTag: true,
       // injectPWAMetaTags: false,
       // extendPWACustomSWConf (rolldownConf) {},
-      // extendPWAGenerateSWOptions (cfg) {},
+      extendPWAGenerateSWOptions() {
+        // Hanya aset build yang diprecache. Request API, termasuk autentikasi,
+        // tidak memiliki runtime caching dan selalu menuju jaringan.
+        return { runtimeCaching: [] }
+      },
       // extendPWAInjectManifestOptions (cfg) {},
       // extendPWASwTsConfig (tsConfig) {}
     },

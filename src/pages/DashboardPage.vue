@@ -114,10 +114,9 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '@/boot/axios'
 
 const router = useRouter()
-const apiBaseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
-
 function getStoredUser() {
   try {
     return JSON.parse(localStorage.getItem('creative_auth_user')) || {}
@@ -201,13 +200,8 @@ const activities = [
 ]
 
 async function logout() {
-  const token = localStorage.getItem('creative_auth_token')
-
   try {
-    await fetch(`${apiBaseUrl}/logout`, {
-      method: 'POST',
-      headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-    })
+    await api.post('/logout')
   } finally {
     localStorage.removeItem('creative_auth_token')
     localStorage.removeItem('creative_auth_user')

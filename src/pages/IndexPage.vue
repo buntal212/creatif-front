@@ -105,6 +105,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '@/boot/axios'
 
 const router = useRouter()
 const username = ref('')
@@ -114,30 +115,15 @@ const isSubmitting = ref(false)
 const showForgotInfo = ref(false)
 const loginError = ref('')
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
-
 async function submitLogin() {
   loginError.value = ''
   isSubmitting.value = true
 
   try {
-    const response = await fetch(`${apiBaseUrl}/login`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: username.value,
-        password: password.value,
-      }),
+    const { data: payload } = await api.post('/login', {
+      username: username.value,
+      password: password.value,
     })
-
-    const payload = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new Error(payload.message || 'Login gagal. Silakan coba lagi.')
-    }
 
     localStorage.setItem('creative_auth_token', payload.token)
     localStorage.setItem('creative_auth_user', JSON.stringify(payload.user))
@@ -145,7 +131,7 @@ async function submitLogin() {
     await router.push('/')
   } catch (error) {
     loginError.value =
-      error instanceof Error && error.message !== 'Failed to fetch'
+      error instanceof Error
         ? error.message
         : 'Tidak dapat terhubung ke server. Periksa URL API dan koneksi Anda.'
   } finally {
