@@ -12,7 +12,7 @@
 
     <main class="login-content">
       <section class="brand-intro" aria-labelledby="brand-name">
-        <div class="brand-mark" aria-hidden="true"><span></span><span></span></div>
+        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
         <p id="brand-name" class="brand-name">CREATIVE</p>
         <p class="brand-subtitle">Admin Panel</p>
       </section>
@@ -99,11 +99,51 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="showInstallDialog">
+      <q-card class="info-dialog">
+        <q-card-section class="install-dialog-heading">
+          <q-icon name="install_mobile" size="29px" />
+          <div>
+            <div class="text-h6">Install Creative Admin</div>
+            <p>Akses admin lebih cepat langsung dari layar utama.</p>
+          </div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <template v-if="isStandalone"> Aplikasi ini sudah terpasang di perangkat Anda. </template>
+          <template v-else-if="isIos">
+            Ketuk tombol Bagikan di Safari, lalu pilih <b>Tambahkan ke Layar Utama</b>.
+          </template>
+          <template v-else-if="deferredInstallPrompt">
+            Aplikasi siap diinstal. Ketuk tombol <b>Install Sekarang</b> untuk menambahkannya ke
+            layar utama.
+          </template>
+          <template v-else>
+            Browser belum menawarkan pemasangan otomatis. Gunakan Chrome atau Edge melalui HTTPS,
+            lalu pilih
+            <b>Install aplikasi</b> pada menu browser.
+          </template>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat no-caps color="grey-5" label="Nanti Saja" />
+          <q-btn
+            v-if="deferredInstallPrompt"
+            unelevated
+            no-caps
+            color="amber-8"
+            text-color="dark"
+            icon="download"
+            label="Install Sekarang"
+            @click="installToHomeScreen"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/boot/axios'
 
@@ -114,6 +154,26 @@ const showPassword = ref(false)
 const isSubmitting = ref(false)
 const showForgotInfo = ref(false)
 const loginError = ref('')
+const showInstallDialog = ref(false)
+const isIos = ref(false)
+const isStandalone = ref(false)
+const deferredInstallPrompt = ref(null)
+
+function captureInstallPrompt(event) {
+  event.preventDefault()
+  deferredInstallPrompt.value = event
+  showInstallDialog.value = true
+}
+
+async function installToHomeScreen() {
+  if (!deferredInstallPrompt.value) {
+    return
+  }
+
+  await deferredInstallPrompt.value.prompt()
+  deferredInstallPrompt.value = null
+  showInstallDialog.value = false
+}
 
 async function submitLogin() {
   loginError.value = ''
@@ -138,6 +198,20 @@ async function submitLogin() {
     isSubmitting.value = false
   }
 }
+
+onMounted(() => {
+  isIos.value = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  isStandalone.value =
+    window.matchMedia('(display-mode: standalone)').matches || Boolean(navigator.standalone)
+  if (!isStandalone.value) {
+    showInstallDialog.value = true
+  }
+  window.addEventListener('beforeinstallprompt', captureInstallPrompt)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeinstallprompt', captureInstallPrompt)
+})
 </script>
 
 <style scoped lang="scss">
@@ -295,6 +369,13 @@ async function submitLogin() {
   margin-bottom: 34px;
   text-align: center;
 }
+.brand-logo {
+  display: block;
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 14px;
+  object-fit: contain;
+}
 .brand-mark {
   position: relative;
   width: 67px;
@@ -451,6 +532,20 @@ async function submitLogin() {
   background: #202326;
   color: #f8f8f8;
 }
+.install-dialog-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #f6c645;
+}
+.install-dialog-heading .text-h6 {
+  color: #f8f8f8;
+}
+.install-dialog-heading p {
+  margin: 2px 0 0;
+  color: #b6bac2;
+  font-size: 0.82rem;
+}
 
 @media (max-width: 599px) {
   .login-page {
@@ -462,6 +557,10 @@ async function submitLogin() {
   }
   .brand-intro {
     margin-bottom: 28px;
+  }
+  .brand-logo {
+    width: 68px;
+    height: 68px;
   }
   .brand-mark {
     transform: scale(0.83) rotate(45deg);

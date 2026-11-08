@@ -2,13 +2,16 @@
   <q-page class="dashboard-page">
     <header class="dashboard-topbar">
       <div class="brand-lockup">
-        <div class="brand-mark" aria-hidden="true"><span></span><span></span></div>
+        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
         <span>CREATIVE</span>
       </div>
 
       <nav class="dashboard-nav" aria-label="Navigasi utama">
         <RouterLink to="/categories">Kategori</RouterLink>
         <RouterLink to="/products">Produk</RouterLink>
+        <RouterLink to="/contact">Kontak</RouterLink>
+        <RouterLink to="/gallery">Galeri Produksi</RouterLink>
+        <RouterLink to="/users">Pengguna</RouterLink>
       </nav>
 
       <q-btn flat no-caps class="profile-button">
@@ -17,9 +20,12 @@
         <q-icon name="expand_more" />
         <q-menu class="profile-menu">
           <q-list style="min-width: 170px">
-            <q-item clickable v-close-popup @click="logout">
-              <q-item-section avatar><q-icon name="logout" /></q-item-section>
-              <q-item-section>Keluar</q-item-section>
+            <q-item clickable :disable="isLoggingOut" @click="logout">
+              <q-item-section avatar>
+                <q-spinner v-if="isLoggingOut" color="amber-8" size="20px" />
+                <q-icon v-else name="logout" />
+              </q-item-section>
+              <q-item-section>{{ isLoggingOut ? 'Sedang keluar...' : 'Keluar' }}</q-item-section>
             </q-item>
           </q-list>
         </q-menu>
@@ -126,6 +132,7 @@ function getStoredUser() {
 }
 
 const user = ref(getStoredUser())
+const isLoggingOut = ref(false)
 const initials = computed(() =>
   String(user.value.name || user.value.username || 'A')
     .split(' ')
@@ -174,6 +181,9 @@ const chartDays = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
 const quickLinks = [
   { label: 'Kelola Kategori', icon: 'category', to: '/categories' },
   { label: 'Kelola Produk', icon: 'inventory_2', to: '/products' },
+  { label: 'Kelola Kontak', icon: 'contact_phone', to: '/contact' },
+  { label: 'Kelola Galeri Produksi', icon: 'photo_library', to: '/gallery' },
+  { label: 'Kelola Pengguna', icon: 'manage_accounts', to: '/users' },
 ]
 const activities = [
   {
@@ -200,12 +210,17 @@ const activities = [
 ]
 
 async function logout() {
+  if (isLoggingOut.value) return
+
+  isLoggingOut.value = true
+
   try {
     await api.post('/logout')
   } finally {
     localStorage.removeItem('creative_auth_token')
     localStorage.removeItem('creative_auth_user')
     await router.push('/login')
+    isLoggingOut.value = false
   }
 }
 </script>
@@ -251,6 +266,11 @@ async function logout() {
   font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: 0.12em;
+}
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
 }
 .brand-mark {
   position: relative;

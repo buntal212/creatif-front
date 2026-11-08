@@ -2,13 +2,16 @@
   <q-page class="catalog-page">
     <header class="catalog-topbar">
       <RouterLink class="brand-lockup" to="/">
-        <div class="brand-mark" aria-hidden="true"><span></span><span></span></div>
+        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
         <span>CREATIVE</span>
       </RouterLink>
       <nav class="catalog-nav" aria-label="Navigasi utama">
         <RouterLink to="/">Dashboard</RouterLink>
         <RouterLink class="is-active" to="/categories">Kategori</RouterLink>
         <RouterLink to="/products">Produk</RouterLink>
+        <RouterLink to="/contact">Kontak</RouterLink>
+        <RouterLink to="/gallery">Galeri Produksi</RouterLink>
+        <RouterLink to="/users">Pengguna</RouterLink>
       </nav>
       <q-btn flat no-caps color="grey-4" icon="arrow_back" label="Dashboard" to="/" />
     </header>
@@ -255,6 +258,11 @@ onMounted(loadCategories)
   font-weight: 800;
   letter-spacing: 0.12em;
   text-decoration: none;
+}
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
 }
 .brand-mark {
   position: relative;
