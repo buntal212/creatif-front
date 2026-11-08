@@ -42,6 +42,11 @@
         <q-btn unelevated no-caps class="primary-action" icon="add" label="Tambah Produk" />
       </section>
 
+      <q-banner v-if="statsError" rounded class="stats-error">
+        <template #avatar><q-icon name="error_outline" /></template>
+        {{ statsError }}
+      </q-banner>
+
       <section class="stats-grid" aria-label="Ringkasan bisnis">
         <article v-for="stat in stats" :key="stat.label" class="stat-card">
           <div class="stat-icon" :class="'stat-icon--' + stat.color">
@@ -59,15 +64,27 @@
         <article class="panel sales-panel">
           <div class="panel-heading">
             <div>
-              <h2>Ringkasan Penjualan</h2>
-              <p>Performa penjualan 7 hari terakhir</p>
+              <h2>Aktivitas Katalog</h2>
+              <p>Produk yang ditambahkan dalam 7 hari terakhir</p>
             </div>
-            <q-btn flat no-caps dense label="Minggu ini" icon-right="expand_more" />
+            <span class="panel-period">7 hari terakhir</span>
           </div>
-          <div class="chart" aria-label="Grafik penjualan ilustratif">
-            <div v-for="(height, index) in chartBars" :key="index" class="bar-column">
-              <div class="bar" :style="{ height: height + '%' }"></div>
-              <span>{{ chartDays[index] }}</span>
+          <div v-if="isActivityLoading" class="chart-status">Memuat aktivitas katalog...</div>
+          <div v-else-if="!hasProductActivity" class="chart-status">
+            Belum ada produk yang ditambahkan dalam 7 hari terakhir.
+          </div>
+          <div
+            v-else
+            class="chart"
+            aria-label="Grafik produk yang ditambahkan dalam 7 hari terakhir"
+          >
+            <div v-for="day in productActivity" :key="day.date" class="bar-column">
+              <div
+                class="bar"
+                :class="{ 'bar--empty': day.count === 0 }"
+                :style="{ height: chartBarHeight(day.count) + '%' }"
+              ></div>
+              <span>{{ day.label }}</span>
             </div>
           </div>
         </article>
@@ -100,10 +117,18 @@
             <h2>Aktivitas Terbaru</h2>
             <p>Pembaruan terbaru di sistem</p>
           </div>
-          <q-btn flat no-caps color="amber-8" label="Lihat semua" />
+          <span class="panel-period">3 terbaru</span>
         </div>
-        <div class="activity-list">
-          <div v-for="activity in activities" :key="activity.title" class="activity-item">
+        <div v-if="isActivitiesLoading" class="activity-status">Memuat aktivitas terbaru...</div>
+        <div v-else-if="recentActivities.length === 0" class="activity-status">
+          Belum ada aktivitas yang tercatat.
+        </div>
+        <div v-else class="activity-list">
+          <div
+            v-for="activity in recentActivities"
+            :key="`${activity.type}-${activity.id}-${activity.occurredAt}`"
+            class="activity-item"
+          >
             <q-icon :name="activity.icon" :class="'activity-icon--' + activity.color" />
             <div>
               <strong>{{ activity.title }}</strong>
@@ -118,7 +143,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/boot/axios'
 
@@ -133,6 +158,11 @@ function getStoredUser() {
 
 const user = ref(getStoredUser())
 const isLoggingOut = ref(false)
+const statsError = ref('')
+const isActivityLoading = ref(true)
+const productActivity = ref([])
+const isActivitiesLoading = ref(true)
+const recentActivities = ref([])
 const initials = computed(() =>
   String(user.value.name || user.value.username || 'A')
     .split(' ')
@@ -142,42 +172,41 @@ const initials = computed(() =>
     .toUpperCase(),
 )
 
-const stats = [
+const stats = ref([
   {
     label: 'Total Produk',
-    value: '24',
-    detail: '+4 bulan ini',
+    value: '—',
+    detail: 'Memuat data...',
     icon: 'inventory_2',
     color: 'gold',
-    positive: true,
   },
   {
-    label: 'Pesanan Baru',
-    value: '12',
-    detail: 'Perlu diproses',
-    icon: 'shopping_bag',
+    label: 'Total Kategori',
+    value: '—',
+    detail: 'Memuat data...',
+    icon: 'category',
     color: 'blue',
   },
   {
-    label: 'Pendapatan',
-    value: 'Rp8,5 jt',
-    detail: '+12,5% minggu ini',
-    icon: 'payments',
+    label: 'Galeri Produksi',
+    value: '—',
+    detail: 'Memuat data...',
+    icon: 'photo_library',
     color: 'green',
-    positive: true,
   },
   {
-    label: 'Pengunjung',
-    value: '1.284',
-    detail: '+8,2% minggu ini',
-    icon: 'groups',
+    label: 'Pengguna Admin',
+    value: '—',
+    detail: 'Memuat data...',
+    icon: 'manage_accounts',
     color: 'purple',
-    positive: true,
   },
-]
+])
 
-const chartBars = [48, 66, 42, 78, 58, 88, 70]
-const chartDays = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
+const activityMaximum = computed(() =>
+  Math.max(...productActivity.value.map((day) => day.count), 0),
+)
+const hasProductActivity = computed(() => productActivity.value.some((day) => day.count > 0))
 const quickLinks = [
   { label: 'Kelola Kategori', icon: 'category', to: '/categories' },
   { label: 'Kelola Produk', icon: 'inventory_2', to: '/products' },
@@ -185,29 +214,104 @@ const quickLinks = [
   { label: 'Kelola Galeri Produksi', icon: 'photo_library', to: '/gallery' },
   { label: 'Kelola Pengguna', icon: 'manage_accounts', to: '/users' },
 ]
-const activities = [
-  {
-    title: 'Pesanan baru diterima',
-    detail: 'Pesanan #CR-1024 menunggu konfirmasi.',
-    time: '5 menit',
-    icon: 'shopping_bag',
-    color: 'gold',
-  },
-  {
-    title: 'Produk diperbarui',
-    detail: 'Stok Produk Premium telah diperbarui.',
-    time: '1 jam',
-    icon: 'inventory_2',
-    color: 'blue',
-  },
-  {
-    title: 'Konten dipublikasikan',
-    detail: 'Artikel terbaru kini tampil di website.',
-    time: '3 jam',
-    icon: 'article',
-    color: 'green',
-  },
-]
+
+function activityDayLabel(date) {
+  return ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'][new Date(`${date}T00:00:00`).getDay()]
+}
+
+function chartBarHeight(count) {
+  if (count === 0 || activityMaximum.value === 0) return 0
+
+  return Math.max(12, Math.round((count / activityMaximum.value) * 100))
+}
+
+function activityAppearance(type) {
+  return {
+    product: { icon: 'inventory_2', color: 'blue' },
+    category: { icon: 'category', color: 'gold' },
+    gallery: { icon: 'photo_library', color: 'green' },
+    user: { icon: 'manage_accounts', color: 'purple' },
+  }[type]
+}
+
+function relativeTime(occurredAt) {
+  const differenceInSeconds = Math.max(
+    0,
+    Math.floor((Date.now() - new Date(occurredAt).getTime()) / 1000),
+  )
+
+  if (differenceInSeconds < 60) return 'Baru saja'
+  if (differenceInSeconds < 3600) return `${Math.floor(differenceInSeconds / 60)} menit lalu`
+  if (differenceInSeconds < 86400) return `${Math.floor(differenceInSeconds / 3600)} jam lalu`
+  if (differenceInSeconds < 604800) return `${Math.floor(differenceInSeconds / 86400)} hari lalu`
+
+  return new Date(occurredAt).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+async function loadDashboardSummary() {
+  statsError.value = ''
+
+  try {
+    const { data: summary } = await api.get('/dashboard/summary')
+    productActivity.value = Array.isArray(summary.product_activity)
+      ? summary.product_activity.map((day) => ({
+          date: day.date,
+          count: Number(day.count) || 0,
+          label: activityDayLabel(day.date),
+        }))
+      : []
+    recentActivities.value = Array.isArray(summary.recent_activities)
+      ? summary.recent_activities.map((activity) => ({
+          ...activity,
+          ...activityAppearance(activity.type),
+          occurredAt: activity.occurred_at,
+          time: relativeTime(activity.occurred_at),
+        }))
+      : []
+    stats.value = [
+      {
+        label: 'Total Produk',
+        value: summary.products,
+        detail: 'Produk terdaftar',
+        icon: 'inventory_2',
+        color: 'gold',
+      },
+      {
+        label: 'Total Kategori',
+        value: summary.categories,
+        detail: 'Kategori terdaftar',
+        icon: 'category',
+        color: 'blue',
+      },
+      {
+        label: 'Galeri Produksi',
+        value: summary.gallery_items,
+        detail: 'Foto di galeri',
+        icon: 'photo_library',
+        color: 'green',
+      },
+      {
+        label: 'Pengguna Admin',
+        value: summary.users,
+        detail: 'Akun terdaftar',
+        icon: 'manage_accounts',
+        color: 'purple',
+      },
+    ]
+  } catch (exception) {
+    statsError.value = exception.message
+    productActivity.value = []
+    recentActivities.value = []
+    stats.value = stats.value.map((stat) => ({ ...stat, detail: 'Data belum tersedia' }))
+  } finally {
+    isActivityLoading.value = false
+    isActivitiesLoading.value = false
+  }
+}
 
 async function logout() {
   if (isLoggingOut.value) return
@@ -223,6 +327,8 @@ async function logout() {
     isLoggingOut.value = false
   }
 }
+
+onMounted(loadDashboardSummary)
 </script>
 
 <style scoped lang="scss">
@@ -345,6 +451,11 @@ async function logout() {
   gap: 18px;
   margin-bottom: 22px;
 }
+.stats-error {
+  margin: 0 0 18px;
+  background: #ffebee;
+  color: #b3261e;
+}
 .stat-card {
   display: flex;
   align-items: center;
@@ -424,6 +535,22 @@ async function logout() {
   color: #85878b;
   font-size: 0.82rem;
 }
+.panel-period {
+  color: #6c4b08;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.chart-status {
+  display: grid;
+  min-height: 205px;
+  place-items: center;
+  margin-top: 26px;
+  border-bottom: 1px solid #e7e4dd;
+  color: #85878b;
+  font-size: 0.86rem;
+  text-align: center;
+}
 .chart {
   display: flex;
   height: 205px;
@@ -449,6 +576,10 @@ async function logout() {
   min-height: 15px;
   border-radius: 8px 8px 2px 2px;
   background: linear-gradient(#f9d568, #d89d1e);
+}
+.bar--empty {
+  min-height: 0;
+  background: transparent;
 }
 .bar-column span {
   padding-bottom: 8px;
@@ -489,6 +620,14 @@ async function logout() {
 .activity-list {
   margin-top: 15px;
 }
+.activity-status {
+  display: grid;
+  min-height: 112px;
+  place-items: center;
+  color: #85878b;
+  font-size: 0.86rem;
+  text-align: center;
+}
 .activity-item {
   display: flex;
   align-items: center;
@@ -514,6 +653,10 @@ async function logout() {
 .activity-icon--green {
   background: #dcf5e3;
   color: #258547;
+}
+.activity-icon--purple {
+  background: #f0e6ff;
+  color: #8051b7;
 }
 .activity-item strong {
   font-size: 0.88rem;
