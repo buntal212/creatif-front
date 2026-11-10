@@ -2,7 +2,11 @@
   <q-page class="catalog-page">
     <header class="catalog-topbar">
       <RouterLink class="brand-lockup" to="/">
-        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
+        <img
+          class="brand-logo"
+          src="/images/logo-creative.png"
+          alt="Logo Creative"
+        />
         <span>CREATIVE</span>
       </RouterLink>
       <nav class="catalog-nav" aria-label="Navigasi utama">
@@ -13,7 +17,14 @@
         <RouterLink to="/gallery">Galeri Produksi</RouterLink>
         <RouterLink to="/users">Pengguna</RouterLink>
       </nav>
-      <q-btn flat no-caps color="grey-4" icon="arrow_back" label="Dashboard" to="/" />
+      <q-btn
+        flat
+        no-caps
+        color="grey-4"
+        icon="arrow_back"
+        label="Dashboard"
+        to="/"
+      />
     </header>
 
     <main class="catalog-content">
@@ -50,7 +61,13 @@
           >
             <template #prepend><q-icon name="search" /></template>
             <template #append
-              ><q-btn flat round dense icon="search" aria-label="Cari" @click="loadProducts"
+              ><q-btn
+                flat
+                round
+                dense
+                icon="search"
+                aria-label="Cari"
+                @click="loadProducts"
             /></template>
           </q-input>
           <q-select
@@ -70,7 +87,11 @@
         </div>
 
         <q-list v-if="rows.length" separator class="product-list">
-          <q-item v-for="product in rows" :key="product.id" class="product-item">
+          <q-item
+            v-for="product in rows"
+            :key="product.id"
+            class="product-item"
+          >
             <q-item-section avatar top>
               <div class="product-picture">
                 <img
@@ -83,7 +104,9 @@
             </q-item-section>
 
             <q-item-section>
-              <q-item-label class="product-name">{{ product.name }}</q-item-label>
+              <q-item-label class="product-name">{{
+                product.name
+              }}</q-item-label>
               <q-item-label caption class="product-description">{{
                 product.description || 'Belum ada deskripsi produk.'
               }}</q-item-label>
@@ -131,7 +154,9 @@
         <div v-else-if="!loading" class="empty-list">
           <q-icon name="inventory_2" size="36px" />
           <p>Belum ada produk.</p>
-          <span>Tambahkan produk pertama Anda untuk mulai mengisi katalog.</span>
+          <span
+            >Tambahkan produk pertama Anda untuk mulai mengisi katalog.</span
+          >
         </div>
         <q-inner-loading :showing="loading" color="amber-8" />
       </section>
@@ -142,9 +167,19 @@
         <q-card-section class="dialog-heading">
           <div>
             <h2>{{ editing ? 'Ubah Produk' : 'Tambah Produk' }}</h2>
-            <p>Kode produk, slug, dan nama file foto dibuat otomatis agar rapi untuk SEO.</p>
+            <p
+              >Kode produk, slug, dan nama file foto dibuat otomatis agar rapi
+              untuk SEO.</p
+            >
           </div>
-          <q-btn flat round dense icon="close" v-close-popup aria-label="Tutup" />
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            v-close-popup
+            aria-label="Tutup"
+          />
         </q-card-section>
         <q-card-section>
           <q-form @submit="saveProduct">
@@ -157,7 +192,7 @@
                   outlined
                   autofocus
                   placeholder="Contoh: Kaos Premium"
-                  :rules="[(value) => !!value || 'Nama produk wajib diisi']"
+                  :rules="[value => !!value || 'Nama produk wajib diisi']"
                 />
                 <p class="field-help">
                   Nama ini otomatis menjadi slug URL yang mudah dibaca, misalnya
@@ -188,7 +223,7 @@
                   prefix="Rp"
                   inputmode="numeric"
                   placeholder="0"
-                  :rules="[(value) => value !== '' || 'Harga wajib diisi']"
+                  :rules="[value => value !== '' || 'Harga wajib diisi']"
                   @update:model-value="updatePrice"
                 />
               </div>
@@ -201,8 +236,9 @@
                   type="number"
                   min="0"
                   :rules="[
-                    (value) =>
-                      (Number.isInteger(Number(value)) && Number(value) >= 0) || 'Stok tidak valid',
+                    value =>
+                      (Number.isInteger(Number(value)) && Number(value) >= 0) ||
+                      'Stok tidak valid'
                   ]"
                 />
               </div>
@@ -220,7 +256,9 @@
                 />
               </div>
               <div class="field-full">
-                <label for="product-description">Deskripsi <span>opsional</span></label>
+                <label for="product-description"
+                  >Deskripsi <span>opsional</span></label
+                >
                 <q-input
                   id="product-description"
                   v-model.trim="form.description"
@@ -232,7 +270,10 @@
               </div>
               <div class="field-full">
                 <label for="product-images"
-                  >Foto Produk <span>maks. 8 foto, JPG/PNG/WebP, masing-masing 5 MB</span></label
+                  >Foto Produk
+                  <span
+                    >maks. 8 foto, JPG/PNG/WebP, masing-masing 5 MB</span
+                  ></label
                 >
                 <q-file
                   id="product-images"
@@ -247,8 +288,8 @@
                   @rejected="showImageRejected"
                 />
                 <p class="field-help">
-                  Foto pertama otomatis menjadi thumbnail. Nama file dibuat dari nama produk agar
-                  ramah SEO.
+                  Foto pertama otomatis menjadi thumbnail. Nama file dibuat dari
+                  nama produk agar ramah SEO.
                 </p>
               </div>
             </div>
@@ -257,7 +298,10 @@
               <div class="image-manager-heading">
                 <div>
                   <h3>Foto tersimpan</h3>
-                  <p>Pilih satu foto untuk thumbnail yang tampil di halaman depan.</p>
+                  <p
+                    >Pilih satu foto untuk thumbnail yang tampil di halaman
+                    depan.</p
+                  >
                 </div>
               </div>
               <div class="image-grid">
@@ -330,11 +374,18 @@ const form = ref(defaultForm())
 const priceInput = ref('0')
 const statusOptions = [
   { label: 'Aktif - tampil di katalog', value: 'active' },
-  { label: 'Draf - belum ditampilkan', value: 'draft' },
+  { label: 'Draf - belum ditampilkan', value: 'draft' }
 ]
 
 function defaultForm() {
-  return { category_id: null, name: '', description: '', price: 0, stock: 0, status: 'draft' }
+  return {
+    category_id: null,
+    name: '',
+    description: '',
+    price: 0,
+    stock: 0,
+    status: 'draft'
+  }
 }
 
 async function request(path, { body, ...config } = {}) {
@@ -378,7 +429,7 @@ function openEdit(product) {
     description: product.description || '',
     price: Number(product.price),
     stock: product.stock,
-    status: product.status,
+    status: product.status
   }
   priceInput.value = formatPriceInput(product.price)
   dialogOpen.value = true
@@ -392,7 +443,9 @@ function updatePrice(value) {
 }
 
 function formatPriceInput(value) {
-  return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Number(value || 0))
+  return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(
+    Number(value || 0)
+  )
 }
 
 async function loadProductImages(productId) {
@@ -409,7 +462,9 @@ async function saveProduct() {
   saving.value = true
   try {
     const productData = new FormData()
-    Object.entries(form.value).forEach(([key, value]) => productData.append(key, value ?? ''))
+    Object.entries(form.value).forEach(([key, value]) =>
+      productData.append(key, value ?? '')
+    )
     const selectedImages = Array.isArray(newImages.value)
       ? newImages.value
       : newImages.value
@@ -430,15 +485,18 @@ async function saveProduct() {
 }
 
 function applyProduct(product) {
-  const index = rows.value.findIndex((row) => row.id === product.id)
+  const index = rows.value.findIndex(row => row.id === product.id)
   if (index !== -1) rows.value[index] = product
 }
 
 async function setThumbnail(image) {
   try {
-    const product = await request(`/products/${editing.value.id}/images/${image.id}/thumbnail`, {
-      method: 'PATCH',
-    })
+    const product = await request(
+      `/products/${editing.value.id}/images/${image.id}/thumbnail`,
+      {
+        method: 'PATCH'
+      }
+    )
     editing.value = product
     applyProduct(product)
   } catch (exception) {
@@ -449,9 +507,12 @@ async function setThumbnail(image) {
 async function removeImage(image) {
   if (!window.confirm('Hapus foto ini?')) return
   try {
-    const product = await request(`/products/${editing.value.id}/images/${image.id}`, {
-      method: 'DELETE',
-    })
+    const product = await request(
+      `/products/${editing.value.id}/images/${image.id}`,
+      {
+        method: 'DELETE'
+      }
+    )
     editing.value = product
     applyProduct(product)
   } catch (exception) {
@@ -460,7 +521,12 @@ async function removeImage(image) {
 }
 
 async function removeProduct(product) {
-  if (!window.confirm(`Hapus produk ${product.name}? Tindakan ini tidak dapat dibatalkan.`)) return
+  if (
+    !window.confirm(
+      `Hapus produk ${product.name}? Tindakan ini tidak dapat dibatalkan.`
+    )
+  )
+    return
   try {
     await request(`/products/${product.id}`, { method: 'DELETE' })
     await loadProducts()
@@ -480,7 +546,7 @@ function formatPrice(price) {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(price)
 }
 

@@ -2,7 +2,11 @@
   <q-page class="gallery-page">
     <header class="gallery-topbar">
       <RouterLink class="brand-lockup" to="/">
-        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
+        <img
+          class="brand-logo"
+          src="/images/logo-creative.png"
+          alt="Logo Creative"
+        />
         <span>CREATIVE</span>
       </RouterLink>
       <nav class="gallery-nav" aria-label="Navigasi utama">
@@ -13,7 +17,14 @@
         <RouterLink class="is-active" to="/gallery">Galeri Produksi</RouterLink>
         <RouterLink to="/users">Pengguna</RouterLink>
       </nav>
-      <q-btn flat no-caps color="grey-4" icon="arrow_back" label="Dashboard" to="/" />
+      <q-btn
+        flat
+        no-caps
+        color="grey-4"
+        icon="arrow_back"
+        label="Dashboard"
+        to="/"
+      />
     </header>
 
     <main class="gallery-content">
@@ -21,7 +32,10 @@
         <div>
           <p class="eyebrow">KONTEN WEBSITE</p>
           <h1>Galeri Produksi</h1>
-          <p>Unggah foto hasil produksi yang akan tampil di halaman utama website.</p>
+          <p
+            >Unggah foto hasil produksi yang akan tampil di halaman utama
+            website.</p
+          >
         </div>
         <q-btn
           unelevated
@@ -92,10 +106,19 @@
       <q-card class="form-dialog">
         <q-card-section class="dialog-heading">
           <div>
-            <h2>{{ editing ? 'Ubah Foto Produksi' : 'Tambah Foto Produksi' }}</h2>
+            <h2>{{
+              editing ? 'Ubah Foto Produksi' : 'Tambah Foto Produksi'
+            }}</h2>
             <p>Gunakan foto JPG, PNG, atau WebP dengan ukuran maksimal 5 MB.</p>
           </div>
-          <q-btn flat round dense icon="close" v-close-popup aria-label="Tutup" />
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            v-close-popup
+            aria-label="Tutup"
+          />
         </q-card-section>
         <q-card-section>
           <q-form @submit="saveItem">
@@ -106,11 +129,12 @@
               outlined
               autofocus
               placeholder="Contoh: Jersey Tim Futsal"
-              :rules="[(value) => !!value || 'Judul wajib diisi']"
+              :rules="[value => !!value || 'Judul wajib diisi']"
             />
 
             <label for="gallery-image"
-              >Foto <span v-if="editing">opsional, pilih untuk mengganti</span></label
+              >Foto
+              <span v-if="editing">opsional, pilih untuk mengganti</span></label
             >
             <q-file
               id="gallery-image"
@@ -121,10 +145,14 @@
               :rules="[() => !!editing || !!newImage || 'Foto wajib dipilih']"
               @rejected="showImageRejected"
             >
-              <template #prepend><q-icon name="add_photo_alternate" /></template>
+              <template #prepend
+                ><q-icon name="add_photo_alternate"
+              /></template>
             </q-file>
 
-            <label for="gallery-description">Deskripsi <span>opsional</span></label>
+            <label for="gallery-description"
+              >Deskripsi <span>opsional</span></label
+            >
             <q-input
               id="gallery-description"
               v-model.trim="form.description"
@@ -134,7 +162,9 @@
               placeholder="Ceritakan singkat hasil produksi ini..."
             />
 
-            <label for="gallery-alt">Teks alternatif <span>opsional</span></label>
+            <label for="gallery-alt"
+              >Teks alternatif <span>opsional</span></label
+            >
             <q-input
               id="gallery-alt"
               v-model.trim="form.alt_text"
@@ -159,14 +189,21 @@
                   id="gallery-published"
                   v-model="form.is_published"
                   color="amber-9"
-                  :label="form.is_published ? 'Tayang di website' : 'Sembunyikan dari website'"
+                  :label="
+                    form.is_published
+                      ? 'Tayang di website'
+                      : 'Sembunyikan dari website'
+                  "
                 />
               </div>
             </div>
 
             <div v-if="editing?.url" class="current-image">
               <p>Foto saat ini</p>
-              <img :src="editing.url" :alt="editing.alt_text || editing.title" />
+              <img
+                :src="editing.url"
+                :alt="editing.alt_text || editing.title"
+              />
             </div>
 
             <div class="dialog-actions">
@@ -192,7 +229,13 @@ import { onMounted, ref } from 'vue'
 import { api } from '@/boot/axios'
 
 function emptyForm() {
-  return { title: '', description: '', alt_text: '', sort_order: 0, is_published: true }
+  return {
+    title: '',
+    description: '',
+    alt_text: '',
+    sort_order: 0,
+    is_published: true
+  }
 }
 
 const rows = ref([])
@@ -236,13 +279,14 @@ function openEdit(item) {
     description: item.description || '',
     alt_text: item.alt_text || '',
     sort_order: item.sort_order,
-    is_published: item.is_published,
+    is_published: item.is_published
   }
   dialogOpen.value = true
 }
 
 function showImageRejected() {
-  error.value = 'Gunakan gambar JPG, PNG, atau WebP dengan ukuran maksimal 5 MB.'
+  error.value =
+    'Gunakan gambar JPG, PNG, atau WebP dengan ukuran maksimal 5 MB.'
 }
 
 async function saveItem() {
@@ -258,7 +302,9 @@ async function saveItem() {
     payload.append('is_published', form.value.is_published ? '1' : '0')
     if (newImage.value) payload.append('image', newImage.value)
 
-    const path = editing.value ? `/gallery-items/${editing.value.id}` : '/gallery-items'
+    const path = editing.value
+      ? `/gallery-items/${editing.value.id}`
+      : '/gallery-items'
     if (editing.value) payload.append('_method', 'PUT')
     await request(path, { method: 'POST', body: payload })
 
@@ -272,7 +318,12 @@ async function saveItem() {
 }
 
 async function removeItem(item) {
-  if (!window.confirm(`Hapus foto “${item.title}”? Tindakan ini tidak dapat dibatalkan.`)) return
+  if (
+    !window.confirm(
+      `Hapus foto “${item.title}”? Tindakan ini tidak dapat dibatalkan.`
+    )
+  )
+    return
 
   try {
     await request(`/gallery-items/${item.id}`, { method: 'DELETE' })

@@ -6,13 +6,21 @@
       <div class="scene-window"></div>
       <div class="scene-shelf"><span></span><span></span><span></span></div>
       <div class="scene-desk"></div>
-      <div class="scene-plant scene-plant--left"><i></i><i></i><i></i><i></i></div>
-      <div class="scene-plant scene-plant--right"><i></i><i></i><i></i><i></i></div>
+      <div class="scene-plant scene-plant--left"
+        ><i></i><i></i><i></i><i></i
+      ></div>
+      <div class="scene-plant scene-plant--right"
+        ><i></i><i></i><i></i><i></i
+      ></div>
     </div>
 
     <main class="login-content">
       <section class="brand-intro" aria-labelledby="brand-name">
-        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
+        <img
+          class="brand-logo"
+          src="/images/logo-creative.png"
+          alt="Logo Creative"
+        />
         <p id="brand-name" class="brand-name">CREATIVE</p>
         <p class="brand-subtitle">Admin Panel</p>
       </section>
@@ -21,7 +29,11 @@
         <q-card-section class="login-card__heading">
           <h1>Masuk ke Creative</h1>
           <p>Silakan masuk menggunakan akun Anda untuk mengakses dashboard.</p>
-          <p v-if="loginError" class="login-feedback login-feedback--error" role="alert">
+          <p
+            v-if="loginError"
+            class="login-feedback login-feedback--error"
+            role="alert"
+          >
             {{ loginError }}
           </p>
         </q-card-section>
@@ -37,14 +49,18 @@
               class="login-input"
               placeholder="Masukkan username"
               autocomplete="username"
-              :rules="[(value) => !!value || 'Username wajib diisi']"
+              :rules="[value => !!value || 'Username wajib diisi']"
             >
               <template #prepend><q-icon name="mail_outline" /></template>
             </q-input>
 
             <div class="password-heading">
               <label class="field-label" for="login-password">Password</label>
-              <button class="forgot-link" type="button" @click="showForgotInfo = true">
+              <button
+                class="forgot-link"
+                type="button"
+                @click="showForgotInfo = true"
+              >
                 Lupa password?
               </button>
             </div>
@@ -57,7 +73,7 @@
               placeholder="Masukkan password"
               :type="showPassword ? 'text' : 'password'"
               autocomplete="current-password"
-              :rules="[(value) => !!value || 'Password wajib diisi']"
+              :rules="[value => !!value || 'Password wajib diisi']"
             >
               <template #prepend><q-icon name="lock_outline" /></template>
               <template #append>
@@ -66,7 +82,9 @@
                   round
                   dense
                   :icon="showPassword ? 'visibility_off' : 'visibility'"
-                  :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
+                  :aria-label="
+                    showPassword ? 'Sembunyikan password' : 'Tampilkan password'
+                  "
                   @click="showPassword = !showPassword"
                 />
               </template>
@@ -90,7 +108,9 @@
 
     <q-dialog v-model="showForgotInfo">
       <q-card class="info-dialog">
-        <q-card-section><div class="text-h6">Lupa password?</div></q-card-section>
+        <q-card-section
+          ><div class="text-h6">Lupa password?</div></q-card-section
+        >
         <q-card-section class="q-pt-none">
           Hubungi administrator untuk membantu mengatur ulang password Anda.
         </q-card-section>
@@ -110,17 +130,20 @@
           </div>
         </q-card-section>
         <q-card-section class="q-pt-none">
-          <template v-if="isStandalone"> Aplikasi ini sudah terpasang di perangkat Anda. </template>
+          <template v-if="isStandalone">
+            Aplikasi ini sudah terpasang di perangkat Anda.
+          </template>
           <template v-else-if="isIos">
-            Ketuk tombol Bagikan di Safari, lalu pilih <b>Tambahkan ke Layar Utama</b>.
+            Ketuk tombol Bagikan di Safari, lalu pilih
+            <b>Tambahkan ke Layar Utama</b>.
           </template>
           <template v-else-if="deferredInstallPrompt">
-            Aplikasi siap diinstal. Ketuk tombol <b>Install Sekarang</b> untuk menambahkannya ke
-            layar utama.
+            Aplikasi siap diinstal. Ketuk tombol <b>Install Sekarang</b> untuk
+            menambahkannya ke layar utama.
           </template>
           <template v-else>
-            Browser belum menawarkan pemasangan otomatis. Gunakan Chrome atau Edge melalui HTTPS,
-            lalu pilih
+            Browser belum menawarkan pemasangan otomatis. Gunakan Chrome atau
+            Edge melalui HTTPS, lalu pilih
             <b>Install aplikasi</b> pada menu browser.
           </template>
         </q-card-section>
@@ -182,7 +205,7 @@ async function submitLogin() {
   try {
     const { data: payload } = await api.post('/login', {
       username: username.value,
-      password: password.value,
+      password: password.value
     })
 
     localStorage.setItem('creative_auth_token', payload.token)
@@ -202,7 +225,8 @@ async function submitLogin() {
 onMounted(() => {
   isIos.value = /iPad|iPhone|iPod/.test(navigator.userAgent)
   isStandalone.value =
-    window.matchMedia('(display-mode: standalone)').matches || Boolean(navigator.standalone)
+    window.matchMedia('(display-mode: standalone)').matches ||
+    Boolean(navigator.standalone)
   if (!isStandalone.value) {
     showInstallDialog.value = true
   }
@@ -238,7 +262,11 @@ onBeforeUnmount(() => {
   z-index: -2;
   overflow: hidden;
   background:
-    radial-gradient(circle at 84% 19%, rgba(176, 111, 38, 0.43), transparent 19%),
+    radial-gradient(
+      circle at 84% 19%,
+      rgba(176, 111, 38, 0.43),
+      transparent 19%
+    ),
     radial-gradient(circle at 8% 77%, rgba(95, 68, 35, 0.42), transparent 22%),
     linear-gradient(105deg, #10171a 0%, #090b0d 47%, #362213 100%);
 }
@@ -257,7 +285,12 @@ onBeforeUnmount(() => {
   width: 31%;
   height: 73%;
   opacity: 0.34;
-  background: repeating-linear-gradient(90deg, #a5bbc0 0 5px, #1a2428 6px 34px, #070a0b 35px 47px);
+  background: repeating-linear-gradient(
+    90deg,
+    #a5bbc0 0 5px,
+    #1a2428 6px 34px,
+    #070a0b 35px 47px
+  );
   box-shadow: 22px 0 45px #000;
 }
 
@@ -272,7 +305,11 @@ onBeforeUnmount(() => {
   gap: 11%;
   padding: 4% 8%;
   border-bottom: 10px solid rgba(147, 83, 29, 0.95);
-  background: linear-gradient(90deg, rgba(35, 20, 12, 0.5), rgba(118, 69, 25, 0.56));
+  background: linear-gradient(
+    90deg,
+    rgba(35, 20, 12, 0.5),
+    rgba(118, 69, 25, 0.56)
+  );
   box-shadow: inset 0 -20px 22px rgba(248, 177, 72, 0.18);
 
   span {
@@ -327,7 +364,11 @@ onBeforeUnmount(() => {
   align-items: flex-end;
   justify-content: center;
   border-radius: 50% 50% 15% 15%;
-  background: linear-gradient(90deg, rgba(48, 67, 29, 0.76), rgba(12, 23, 15, 0.88));
+  background: linear-gradient(
+    90deg,
+    rgba(48, 67, 29, 0.76),
+    rgba(12, 23, 15, 0.88)
+  );
   filter: blur(1px);
 
   i {
@@ -418,7 +459,11 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 25px;
-  background: linear-gradient(135deg, rgba(28, 31, 34, 0.95), rgba(11, 13, 14, 0.97));
+  background: linear-gradient(
+    135deg,
+    rgba(28, 31, 34, 0.95),
+    rgba(11, 13, 14, 0.97)
+  );
   box-shadow:
     0 24px 70px rgba(0, 0, 0, 0.5),
     inset 0 1px rgba(255, 255, 255, 0.05);

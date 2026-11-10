@@ -3,7 +3,7 @@ import {
   createMemoryHistory,
   createRouter,
   createWebHashHistory,
-  createWebHistory,
+  createWebHistory
 } from 'vue-router'
 
 import routes from './routes.js'
@@ -31,12 +31,13 @@ export default defineRouter((/* { store, ssrContext } */) => {
     // Leave this as is and make changes in quasar.conf.js instead!
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
-    history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
+    history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE)
   })
 
-  Router.beforeEach((to) => {
+  Router.beforeEach(to => {
     const hasToken =
-      typeof window !== 'undefined' && Boolean(window.localStorage.getItem('creative_auth_token'))
+      typeof window !== 'undefined' &&
+      Boolean(window.localStorage.getItem('creative_auth_token'))
 
     if (to.meta.requiresAuth && !hasToken) {
       return '/login'

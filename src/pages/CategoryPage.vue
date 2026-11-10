@@ -2,7 +2,11 @@
   <q-page class="catalog-page">
     <header class="catalog-topbar">
       <RouterLink class="brand-lockup" to="/">
-        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
+        <img
+          class="brand-logo"
+          src="/images/logo-creative.png"
+          alt="Logo Creative"
+        />
         <span>CREATIVE</span>
       </RouterLink>
       <nav class="catalog-nav" aria-label="Navigasi utama">
@@ -13,7 +17,14 @@
         <RouterLink to="/gallery">Galeri Produksi</RouterLink>
         <RouterLink to="/users">Pengguna</RouterLink>
       </nav>
-      <q-btn flat no-caps color="grey-4" icon="arrow_back" label="Dashboard" to="/" />
+      <q-btn
+        flat
+        no-caps
+        color="grey-4"
+        icon="arrow_back"
+        label="Dashboard"
+        to="/"
+      />
     </header>
 
     <main class="catalog-content">
@@ -49,20 +60,36 @@
           >
             <template #prepend><q-icon name="search" /></template>
           </q-input>
-          <span class="record-count">{{ filteredCategories.length }} kategori</span>
+          <span class="record-count"
+            >{{ filteredCategories.length }} kategori</span
+          >
         </div>
 
-        <q-list v-if="filteredCategories.length" separator class="category-list">
-          <q-item v-for="category in filteredCategories" :key="category.id" class="category-item">
+        <q-list
+          v-if="filteredCategories.length"
+          separator
+          class="category-list"
+        >
+          <q-item
+            v-for="category in filteredCategories"
+            :key="category.id"
+            class="category-item"
+          >
             <q-item-section avatar top>
-              <div class="category-icon"><q-icon name="category" size="20px" /></div>
+              <div class="category-icon"
+                ><q-icon name="category" size="20px"
+              /></div>
             </q-item-section>
             <q-item-section>
-              <q-item-label class="category-name">{{ category.name }}</q-item-label>
+              <q-item-label class="category-name">{{
+                category.name
+              }}</q-item-label>
               <q-item-label caption class="category-description">
                 {{ category.description || 'Belum ada deskripsi kategori.' }}
               </q-item-label>
-              <q-item-label caption class="slug-text">/{{ category.slug }}</q-item-label>
+              <q-item-label caption class="slug-text"
+                >/{{ category.slug }}</q-item-label
+              >
             </q-item-section>
             <q-item-section side class="category-meta">
               <q-badge rounded color="amber-2" text-color="amber-10"
@@ -94,8 +121,14 @@
 
         <div v-else-if="!loading" class="empty-list">
           <q-icon name="category" size="36px" />
-          <p>{{ search ? 'Kategori tidak ditemukan.' : 'Belum ada kategori.' }}</p>
-          <span>{{ search ? 'Coba kata kunci lain.' : 'Tambahkan kategori pertama Anda.' }}</span>
+          <p>{{
+            search ? 'Kategori tidak ditemukan.' : 'Belum ada kategori.'
+          }}</p>
+          <span>{{
+            search
+              ? 'Coba kata kunci lain.'
+              : 'Tambahkan kategori pertama Anda.'
+          }}</span>
         </div>
         <q-inner-loading :showing="loading" color="amber-8" />
       </section>
@@ -108,7 +141,14 @@
             <h2>{{ editing ? 'Ubah Kategori' : 'Tambah Kategori' }}</h2>
             <p>Nama kategori akan digunakan untuk mengelompokkan produk.</p>
           </div>
-          <q-btn flat round dense icon="close" v-close-popup aria-label="Tutup" />
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            v-close-popup
+            aria-label="Tutup"
+          />
         </q-card-section>
         <q-card-section>
           <q-form @submit="saveCategory">
@@ -119,9 +159,11 @@
               outlined
               autofocus
               placeholder="Contoh: Pakaian Pria"
-              :rules="[(value) => !!value || 'Nama kategori wajib diisi']"
+              :rules="[value => !!value || 'Nama kategori wajib diisi']"
             />
-            <label for="category-description">Deskripsi <span>opsional</span></label>
+            <label for="category-description"
+              >Deskripsi <span>opsional</span></label
+            >
             <q-input
               id="category-description"
               v-model.trim="form.description"
@@ -164,12 +206,12 @@ const form = ref({ name: '', description: '' })
 const filteredCategories = computed(() => {
   const keyword = search.value.trim().toLowerCase()
   if (!keyword) return rows.value
-  return rows.value.filter((category) =>
-    [category.name, category.description, category.slug].some((value) =>
+  return rows.value.filter(category =>
+    [category.name, category.description, category.slug].some(value =>
       String(value || '')
         .toLowerCase()
-        .includes(keyword),
-    ),
+        .includes(keyword)
+    )
   )
 })
 
@@ -205,11 +247,13 @@ function openEdit(category) {
 async function saveCategory() {
   saving.value = true
   try {
-    const path = editing.value ? `/categories/${editing.value.id}` : '/categories'
+    const path = editing.value
+      ? `/categories/${editing.value.id}`
+      : '/categories'
     await request(path, {
       method: editing.value ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form.value),
+      body: JSON.stringify(form.value)
     })
     dialogOpen.value = false
     await loadCategories()
@@ -221,7 +265,11 @@ async function saveCategory() {
 }
 
 async function removeCategory(category) {
-  if (!window.confirm(`Hapus kategori ${category.name}? Produk di dalamnya tidak akan dihapus.`))
+  if (
+    !window.confirm(
+      `Hapus kategori ${category.name}? Produk di dalamnya tidak akan dihapus.`
+    )
+  )
     return
   try {
     await request(`/categories/${category.id}`, { method: 'DELETE' })

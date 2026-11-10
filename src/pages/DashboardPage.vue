@@ -211,6 +211,7 @@ const quickLinks = [
   { label: 'Kelola Kategori', icon: 'category', to: '/categories' },
   { label: 'Kelola Produk', icon: 'inventory_2', to: '/products' },
   { label: 'Kelola Kontak', icon: 'contact_phone', to: '/contact' },
+  { label: 'Kelola Media Sosial', icon: 'share', to: '/social-media' },
   { label: 'Kelola Galeri Produksi', icon: 'photo_library', to: '/gallery' },
   { label: 'Kelola Pengguna', icon: 'manage_accounts', to: '/users' },
 ]
@@ -306,7 +307,10 @@ async function loadDashboardSummary() {
     statsError.value = exception.message
     productActivity.value = []
     recentActivities.value = []
-    stats.value = stats.value.map((stat) => ({ ...stat, detail: 'Data belum tersedia' }))
+    stats.value = stats.value.map((stat) => ({
+      ...stat,
+      detail: 'Data belum tersedia',
+    }))
   } finally {
     isActivityLoading.value = false
     isActivitiesLoading.value = false

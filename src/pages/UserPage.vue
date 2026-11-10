@@ -2,7 +2,11 @@
   <q-page class="user-page">
     <header class="user-topbar">
       <RouterLink class="brand-lockup" to="/" aria-label="Dashboard Creative">
-        <img class="brand-logo" src="/images/logo-creative.png" alt="Logo Creative" />
+        <img
+          class="brand-logo"
+          src="/images/logo-creative.png"
+          alt="Logo Creative"
+        />
         <span>CREATIVE</span>
       </RouterLink>
       <nav class="user-nav" aria-label="Navigasi utama">
@@ -13,7 +17,14 @@
         <RouterLink to="/gallery">Galeri Produksi</RouterLink>
         <RouterLink class="is-active" to="/users">Pengguna</RouterLink>
       </nav>
-      <q-btn flat no-caps color="grey-4" icon="arrow_back" label="Dashboard" to="/" />
+      <q-btn
+        flat
+        no-caps
+        color="grey-4"
+        icon="arrow_back"
+        label="Dashboard"
+        to="/"
+      />
     </header>
 
     <main class="user-content">
@@ -21,7 +32,10 @@
         <div>
           <p class="eyebrow">AKSES ADMIN</p>
           <h1>Kelola Pengguna</h1>
-          <p>Atur akun yang dapat masuk dan mengelola konten website Creative.</p>
+          <p
+            >Atur akun yang dapat masuk dan mengelola konten website
+            Creative.</p
+          >
         </div>
         <q-btn
           unelevated
@@ -53,7 +67,11 @@
         </div>
 
         <q-list v-if="filteredUsers.length" separator class="user-list">
-          <q-item v-for="account in filteredUsers" :key="account.id" class="user-item">
+          <q-item
+            v-for="account in filteredUsers"
+            :key="account.id"
+            class="user-item"
+          >
             <q-item-section avatar top>
               <q-avatar color="amber-2" text-color="amber-10" size="46px">
                 {{ initials(account) }}
@@ -102,9 +120,13 @@
 
         <div v-else-if="!loading" class="empty-list">
           <q-icon name="manage_accounts" size="40px" />
-          <p>{{ search ? 'Pengguna tidak ditemukan.' : 'Belum ada pengguna.' }}</p>
+          <p>{{
+            search ? 'Pengguna tidak ditemukan.' : 'Belum ada pengguna.'
+          }}</p>
           <span>{{
-            search ? 'Coba kata kunci lain.' : 'Tambahkan akun pertama untuk mulai berkolaborasi.'
+            search
+              ? 'Coba kata kunci lain.'
+              : 'Tambahkan akun pertama untuk mulai berkolaborasi.'
           }}</span>
         </div>
         <q-inner-loading :showing="loading" color="amber-8" />
@@ -124,7 +146,14 @@
               }}
             </p>
           </div>
-          <q-btn flat round dense icon="close" v-close-popup aria-label="Tutup" />
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            v-close-popup
+            aria-label="Tutup"
+          />
         </q-card-section>
         <q-card-section>
           <q-form @submit="saveUser">
@@ -137,7 +166,7 @@
                   outlined
                   autofocus
                   placeholder="Contoh: Andi Pratama"
-                  :rules="[(value) => !!value || 'Nama wajib diisi']"
+                  :rules="[value => !!value || 'Nama wajib diisi']"
                 />
               </div>
               <div>
@@ -147,7 +176,7 @@
                   v-model.trim="form.username"
                   outlined
                   placeholder="Contoh: andi.pratama"
-                  :rules="[(value) => !!value || 'Username wajib diisi']"
+                  :rules="[value => !!value || 'Username wajib diisi']"
                 />
               </div>
               <div class="field-full">
@@ -158,11 +187,16 @@
                   outlined
                   type="email"
                   placeholder="Contoh: andi@creative.com"
-                  :rules="[(value) => /.+@.+\..+/.test(value) || 'Format email tidak valid']"
+                  :rules="[
+                    value =>
+                      /.+@.+\..+/.test(value) || 'Format email tidak valid'
+                  ]"
                 />
               </div>
               <div>
-                <label for="user-password">Kata sandi <span v-if="editing">opsional</span></label>
+                <label for="user-password"
+                  >Kata sandi <span v-if="editing">opsional</span></label
+                >
                 <q-input
                   id="user-password"
                   v-model="form.password"
@@ -170,8 +204,8 @@
                   :type="showPassword ? 'text' : 'password'"
                   placeholder="Minimal 8 karakter"
                   :rules="[
-                    (value) => editing || !!value || 'Kata sandi wajib diisi',
-                    (value) => !value || value.length >= 8 || 'Minimal 8 karakter',
+                    value => editing || !!value || 'Kata sandi wajib diisi',
+                    value => !value || value.length >= 8 || 'Minimal 8 karakter'
                   ]"
                 >
                   <template #append
@@ -183,7 +217,9 @@
                 </q-input>
               </div>
               <div>
-                <label for="user-password-confirmation">Konfirmasi kata sandi</label>
+                <label for="user-password-confirmation"
+                  >Konfirmasi kata sandi</label
+                >
                 <q-input
                   id="user-password-confirmation"
                   v-model="form.password_confirmation"
@@ -191,10 +227,10 @@
                   :type="showPassword ? 'text' : 'password'"
                   placeholder="Ulangi kata sandi"
                   :rules="[
-                    (value) =>
+                    value =>
                       !form.password ||
                       value === form.password ||
-                      'Konfirmasi kata sandi belum sama',
+                      'Konfirmasi kata sandi belum sama'
                   ]"
                 />
               </div>
@@ -221,7 +257,8 @@
           <div>
             <h2>Hapus pengguna?</h2>
             <p>
-              Akun <strong>{{ deletingUser?.name }}</strong> tidak dapat dipulihkan setelah dihapus.
+              Akun <strong>{{ deletingUser?.name }}</strong> tidak dapat
+              dipulihkan setelah dihapus.
             </p>
           </div>
         </q-card-section>
@@ -246,7 +283,13 @@ import { computed, onMounted, ref } from 'vue'
 import { api } from '@/boot/axios'
 
 function emptyForm() {
-  return { name: '', username: '', email: '', password: '', password_confirmation: '' }
+  return {
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+  }
 }
 
 function currentUserId() {
@@ -277,19 +320,19 @@ const filteredUsers = computed(() => {
 
   if (!query) return users.value
 
-  return users.value.filter((account) =>
-    [account.name, account.username, account.email].some((value) =>
+  return users.value.filter(account =>
+    [account.name, account.username, account.email].some(value =>
       String(value || '')
         .toLowerCase()
-        .includes(query),
-    ),
+        .includes(query)
+    )
   )
 })
 
 function initials(account) {
   return String(account.name || account.username || 'A')
     .split(' ')
-    .map((part) => part[0])
+    .map(part => part[0])
     .join('')
     .slice(0, 2)
     .toUpperCase()
@@ -305,7 +348,7 @@ function formatDate(value) {
   return new Intl.DateTimeFormat('id-ID', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric',
+    year: 'numeric'
   }).format(new Date(value))
 }
 
@@ -338,7 +381,7 @@ function openEdit(account) {
     username: account.username,
     email: account.email,
     password: '',
-    password_confirmation: '',
+    password_confirmation: ''
   }
   showPassword.value = false
   dialogOpen.value = true
@@ -355,7 +398,7 @@ async function saveUser() {
 
     const user = response.data
     users.value = editing.value
-      ? users.value.map((account) => (account.id === user.id ? user : account))
+      ? users.value.map(account => (account.id === user.id ? user : account))
       : [user, ...users.value]
     dialogOpen.value = false
   } catch (exception) {
@@ -378,7 +421,9 @@ async function removeUser() {
 
   try {
     await api.delete(`/users/${deletingUser.value.id}`)
-    users.value = users.value.filter((account) => account.id !== deletingUser.value.id)
+    users.value = users.value.filter(
+      account => account.id !== deletingUser.value.id
+    )
     deleteDialogOpen.value = false
     deletingUser.value = null
   } catch (exception) {

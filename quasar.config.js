@@ -29,12 +29,12 @@ function getApiBaseUrl(envFile) {
       `[Quasar] QCLI_API_BASE_URL di ${envFile} tidak valid: ${
         error instanceof Error ? error.message : apiBaseUrl
       }`,
-      { cause: error },
+      { cause: error }
     )
   }
 }
 
-export default defineConfig((ctx) => {
+export default defineConfig(ctx => {
   const envFile = ctx.prod ? '.env.production' : '.env.development'
   getApiBaseUrl(envFile)
 
@@ -60,14 +60,14 @@ export default defineConfig((ctx) => {
       // 'line-awesome',
 
       'roboto-font', // optional, you are not bound to it
-      'material-icons', // optional, you are not bound to it
+      'material-icons' // optional, you are not bound to it
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
       env: {
         clientPrefix: 'QCLI_',
-        file: [envFile],
+        file: [envFile]
       },
       target: {
         // browser: 'baseline-widely-available',
@@ -99,13 +99,14 @@ export default defineConfig((ctx) => {
           'vite-plugin-checker',
           {
             eslint: {
-              lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
-              useFlatConfig: true,
-            },
+              lintCommand:
+                'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
+              useFlatConfig: true
+            }
           },
-          { server: false },
-        ],
-      ],
+          { server: false }
+        ]
+      ]
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
@@ -116,9 +117,9 @@ export default defineConfig((ctx) => {
       proxy: {
         '/api': {
           target: process.env.API_PROXY_TARGET || 'http://127.0.0.1:8888',
-          changeOrigin: true,
-        },
-      },
+          changeOrigin: true
+        }
+      }
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
@@ -136,7 +137,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: []
     },
 
     // animations: 'all', // --- includes all animations
@@ -164,8 +165,8 @@ export default defineConfig((ctx) => {
        */
       prodPort: 3000,
       middlewares: [
-        'render', // keep this as last one
-      ],
+        'render' // keep this as last one
+      ]
 
       // clientSideRenderingRoutes: [],
       // noPreloadTagRoutes: [],
@@ -221,7 +222,7 @@ export default defineConfig((ctx) => {
         // Hanya aset build yang diprecache. Request API, termasuk autentikasi,
         // tidak memiliki runtime caching dan selalu menuju jaringan.
         return { runtimeCaching: [] }
-      },
+      }
       // extendPWAInjectManifestOptions (cfg) {},
       // extendPWASwTsConfig (tsConfig) {}
     },
@@ -231,7 +232,7 @@ export default defineConfig((ctx) => {
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-capacitor-apps/configuring-capacitor
     capacitor: {
-      hideSplashscreen: true,
+      hideSplashscreen: true
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
@@ -262,8 +263,8 @@ export default defineConfig((ctx) => {
       builder: {
         // https://www.electron.build/configuration
 
-        appId: 'creatif-font',
-      },
+        appId: 'creatif-font'
+      }
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
@@ -279,7 +280,7 @@ export default defineConfig((ctx) => {
        *
        * @example [ 'my-script.ts', 'sub-folder/my-other-script.js' ]
        */
-      extraScripts: [],
-    },
+      extraScripts: []
+    }
   }
 })

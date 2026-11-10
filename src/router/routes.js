@@ -29,6 +29,11 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
+        path: 'social-media',
+        component: () => import('@/pages/SocialMediaPage.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
         path: 'gallery',
         component: () => import('@/pages/GalleryPage.vue'),
         meta: { requiresAuth: true },
